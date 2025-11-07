@@ -1,8 +1,8 @@
 package gestorfinanceiro.model.conta;
 
-import g2.gestorfinanceiro.exception.SaldoInsuficienteException;
-import g2.gestorfinanceiro.model.lancamento.Lancamento;
-import g2.gestorfinanceiro.model.usuario.Usuario;
+import gestorfinanceiro.exception.SaldoInsuficienteException;
+import gestorfinanceiro.model.lancamento.Lancamento;
+import gestorfinanceiro.model.usuario.Usuario;
 import java.util.List;
 
 public interface ContaFinanceira {

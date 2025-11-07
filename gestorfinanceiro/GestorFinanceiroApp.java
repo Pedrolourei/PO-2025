@@ -1,9 +1,9 @@
 package gestorfinanceiro;
 
-import g2.gestorfinanceiro.model.conta.*; // Importa todas as contas
-import g2.gestorfinanceiro.model.lancamento.*; // Importa lançamentos
-import g2.gestorfinanceiro.model.usuario.*; // Importa usuários
-import g2.gestorfinanceiro.service.SistemaGestaoFinanceira;
+import gestorfinanceiro.model.conta.*;
+import gestorfinanceiro.model.lancamento.*;
+import gestorfinanceiro.model.usuario.*;
+import gestorfinanceiro.service.SistemaGestaoFinanceira;
 
 import java.time.LocalDate;
 import java.util.HashMap;

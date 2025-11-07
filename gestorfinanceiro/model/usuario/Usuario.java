@@ -1,6 +1,6 @@
 package gestorfinanceiro.model.usuario;
 
-import g2.gestorfinanceiro.model.conta.ContaFinanceira;
+import gestorfinanceiro.model.conta.ContaFinanceira;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;

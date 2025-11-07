@@ -1,6 +1,6 @@
 package gestorfinanceiro.exception;
 
-public class SaldoInsuficoenteException extends Exception {
+public class SaldoInsuficienteException extends Exception {
 
     public SaldoInsuficienteException(String message) {
         super(message);

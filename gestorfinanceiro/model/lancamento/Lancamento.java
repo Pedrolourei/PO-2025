@@ -1,13 +1,16 @@
 package gestorfinanceiro.model.lancamento;
 
-import g2.gestorfinanceiro.model.conta.ContaFinanceira;
-import g2.gestorfinanceiro.model.usuario.Usuario;
+import gestorfinanceiro.model.conta.ContaFinanceira;
+import gestorfinanceiro.model.usuario.Usuario;
 import java.time.LocalDate;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.io.Serializable;
+import java.util.Map;
 
-public class Lancamento {
-    private static final AtomicInteger idCounter = new AtomicInteger(1000);
+// Adicionar "implements Serializable"
+public class Lancamento implements Serializable {
+    private static final long serialVersionUID = 1L;
 
     String id;
     double valor;
@@ -26,6 +29,7 @@ public class Lancamento {
     // Despesas compartilhadas
     boolean compartilhado = false;
     Map<Usuario, Double> definicaoRateio;
+    private Map<Usuario, Integer> definicaoPesos; // Peso (ex: 1, 2, 3)
 
     // Construtor para Despesa/Receita
     public Lancamento(double valor, LocalDate data, String desc, TipoLancamento tipo,
@@ -67,6 +71,12 @@ public class Lancamento {
         this.conta = conta;
         this.contaOrigem = origem;
         this.contaDestino = destino;
+    }
+
+    public void setRateioPorPeso(Map<Usuario, Integer> rateio) {
+        this.compartilhado = true;
+        this.definicaoPesos = rateio;
+        this.definicaoRateio = null; // Garante que apenas um tipo de rateio seja usado
     }
 
     // Getters
@@ -112,6 +122,10 @@ public class Lancamento {
 
     public Map<Usuario, Double> getDefinicaoRateio() {
         return definicaoRateio;
+    }
+
+    public Map<Usuario, Integer> getDefinicaoPesos() {
+        return definicaoPesos;
     }
 
     public void setRateio(Map<Usuario, Double> rateio) {
