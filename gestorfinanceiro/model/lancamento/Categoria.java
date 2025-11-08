@@ -9,7 +9,6 @@ public class Categoria {
         this.subcategoria = sub;
     }
 
-    @Override
     public String toString() {
         return nomePrincipal + " > " + subcategoria;
     }

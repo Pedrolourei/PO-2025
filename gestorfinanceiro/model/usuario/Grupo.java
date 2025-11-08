@@ -21,11 +21,7 @@ public class Grupo extends Usuario {
         return membros;
     }
 
-    /**
-     * Retorna o saldo apenas das contas que pertencem ao GRUPO,
-     * não a soma dos saldos dos membros.
-     */
-    @Override
+
     public double getSaldoTotalConsolidado() {
         System.out.println("Calculando saldo das contas do grupo " + getNome() + ":");
         return super.getSaldoTotalConsolidado();
