@@ -7,8 +7,7 @@ import br.com.gestorfinanceiro.model.usuario.Usuario;
  * Implementação Strategy (Módulo 5): Projeção de Saldo.
  */
 public class ProjecaoSaldoLinearStrategy implements IAlgoritmoProjecao {
-    
-    @Override
+
     public double projetarSaldoFuturo(Usuario usuario, int meses) {
         // Lógica de simulação (simplificada):
         // Pega o saldo atual e assume uma média de gastos/receitas.

@@ -11,7 +11,6 @@ import java.util.Map;
  */
 public class RelatorioGastosCategoria implements IRelatorio {
 
-    @Override
     public String gerar(SistemaGestaoFinanceira gestor) {
         StringBuilder sb = new StringBuilder();
         sb.append("=======================================================\n");
