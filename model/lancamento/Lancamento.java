@@ -6,7 +6,7 @@ import java.time.LocalDate;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.io.Serializable;
-import java.util.Map;
+
 
 // Adicionar "implements Serializable"
 public class Lancamento implements Serializable {
@@ -55,20 +55,6 @@ public class Lancamento implements Serializable {
         this.descricao = desc;
         this.tipo = TipoLancamento.TRANSFERENCIA;
         this.categoria = new Categoria("Transferência", "Transferência");
-        this.contaOrigem = origem;
-        this.contaDestino = destino;
-    }
-
-    // Construtor privado para Estorno
-    private Lancamento(String id, double valor, LocalDate data, String desc, TipoLancamento tipo,
-            Categoria cat, ContaFinanceira conta, ContaFinanceira origem, ContaFinanceira destino) {
-        this.id = id;
-        this.valor = valor;
-        this.data = data;
-        this.descricao = desc;
-        this.tipo = tipo;
-        this.categoria = cat;
-        this.conta = conta;
         this.contaOrigem = origem;
         this.contaDestino = destino;
     }
@@ -141,8 +127,6 @@ public class Lancamento implements Serializable {
 
     public Lancamento criarEstorno() {
         String descEstorno = "ESTORNO: " + this.descricao;
-        String idEstorno = "E-" + this.id;
-
         switch (this.tipo) {
             case RECEITA:
                 return new Lancamento(this.valor, LocalDate.now(), descEstorno,
