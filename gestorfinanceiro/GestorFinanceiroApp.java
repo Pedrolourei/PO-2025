@@ -1,59 +1,164 @@
-package gestorfinanceiro;
+package br.com.gestorfinanceiro;
 
-import gestorfinanceiro.model.conta.*;
-import gestorfinanceiro.model.lancamento.*;
-import gestorfinanceiro.model.usuario.*;
-import gestorfinanceiro.service.SistemaGestaoFinanceira;
+import br.com.gestorfinanceiro.factory.TipoRelatorio;
+import br.com.gestorfinanceiro.model.conta.ContaCorrente;
+import br.com.gestorfinanceiro.model.lancamento.Categoria;
+import br.com.gestorfinanceiro.model.lancamento.Lancamento;
+import br.com.gestorfinanceiro.model.lancamento.Orcamento;
+import br.com.gestorfinanceiro.model.lancamento.TipoLancamento;
+import br.com.gestorfinanceiro.model.usuario.Usuario;
+import br.com.gestorfinanceiro.model.usuario.UsuarioIndividual;
+import br.com.gestorfinanceiro.service.SistemaGestaoFinanceira;
 
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Scanner;
 
-public static void main(String[]args){System.out.println("### INICIANDO SISTEMA DE GESTÃO FINANCEIRA ###\n");
+/**
+ * Interação Obrigatória: Menu via Console.
+ */
+public class GestorFinanceiroApp {
 
-SistemaGestaoFinanceira sistema=new SistemaGestaoFinanceira();
+    private final SistemaGestaoFinanceira gestor;
+    private final Scanner scanner;
 
-// --- 1. Usuários e Perfis ---
-System.out.println("--- 1. Criando Usuários e Grupos ---");Usuario ana=new UsuarioIndividual("u1","Ana");Usuario beto=new UsuarioIndividual("u2","Beto");Usuario carla=new UsuarioIndividual("u3","Carla");Grupo republica=new Grupo("g1","República Java");
+    public GestorFinanceiroApp() {
+        // Módulo 7: Tenta carregar o estado salvo
+        SistemaGestaoFinanceira.carregarEstado();
+        this.gestor = SistemaGestaoFinanceira.getInstance();
+        this.scanner = new Scanner(System.in);
+    }
 
-sistema.registrarUsuario(ana);sistema.registrarUsuario(beto);sistema.registrarUsuario(carla);sistema.registrarUsuario(republica);
+    public static void main(String[] args) {
+        GestorFinanceiroApp app = new GestorFinanceiroApp();
+        app.popularDadosIniciaisSeNecessario(); // Popula dados se for a 1ª execução
+        app.run();
+    }
 
-republica.adicionarMembro(ana,Permissao.ADMIN_GRUPO);republica.adicionarMembro(beto,Permissao.MEMBRO_CONTRIBUIDOR);republica.adicionarMembro(carla,Permissao.MEMBRO_CONTRIBUIDOR);
+    /**
+     * Popula o sistema com dados de teste se estiver vazio (1ª execução).
+     */
+    private void popularDadosIniciaisSeNecessario() {
+        if (!gestor.getUsuarios().isEmpty()) {
+            return; // Já foi populado ou carregado
+        }
+        System.out.println("Populando dados iniciais (primeira execução)...");
+        
+        Usuario ana = new UsuarioIndividual("ana", "Ana");
+        gestor.registrarUsuario(ana);
+        ContaCorrente ccAna = new ContaCorrente("c1", "CC Ana", ana, 2000.0);
+        gestor.registrarConta(ccAna);
 
-System.out.println("\n--- 2. Criando Contas (Polimorfismo) ---");
-// --- 2. Contas e Carteiras (Polimorfismo) ---
-ContaFinanceira ccAna=new ContaCorrente("c1","CC Ana (Banco A)",ana,1000.0);ContaFinanceira ccAnaDigital=new ContaDigital("c2","CD Ana (Banco B)",ana,500.0);ContaFinanceira cartaoAna=new CartaoCredito("c3","Cartão Ana (Limite 2000)",ana,2000.0);ContaFinanceira ccBeto=new ContaCorrente("c4","CC Beto (Banco A)",beto,800.0);ContaFinanceira ccCarla=new ContaCorrente("c5","CC Carla (Banco C)",carla,1500.0);ContaFinanceira ccRepublica=new Cofrinho("g1-conta","Cofrinho da República",republica,100.0);
+        Usuario beto = new UsuarioIndividual("beto", "Beto");
+        gestor.registrarUsuario(beto);
+        ContaCorrente ccBeto = new ContaCorrente("c2", "CC Beto", beto, 1000.0);
+        gestor.registrarConta(ccBeto);
+        
+        // Módulo 4: Orçamento
+        Categoria catLazer = new Categoria("Lazer", "Streaming");
+        Orcamento orcLazer = new Orcamento("O1", catLazer, 100.0, 
+                                           LocalDate.now().withDayOfMonth(1), 
+                                           LocalDate.now().withDayOfMonth(30));
+        gestor.adicionarOrcamento(orcLazer);
+    }
 
-sistema.registrarConta(ccAna);sistema.registrarConta(ccAnaDigital);sistema.registrarConta(cartaoAna);sistema.registrarConta(ccBeto);sistema.registrarConta(ccCarla);sistema.registrarConta(ccRepublica);
 
-sistema.gerarRelatorioConsolidadoUsuario(ana);
+    public void run() {
+        boolean running = true;
+        while (running) {
+            System.out.println("\n--- SISTEMA DE GESTÃO FINANCEIRA ---");
+            System.out.println("1. Lançamentos");
+            System.out.println("2. Orçamentos e Metas");
+            System.out.println("3. Relatórios e Análises");
+            System.out.println("4. Simulações (Algoritmos)");
+            System.out.println("5. Salvar e Sair");
+            System.out.print("Escolha uma opção: ");
 
-// --- 3. Lançamentos Financeiros (Regras Obrigatórias) ---
-System.out.println("\n--- 3. Executando Lançamentos ---");
+            int escolha = scanner.nextInt();
+            scanner.nextLine(); // Consome o \n
 
-Categoria catSalario=new Categoria("Receita","Salário");Categoria catMoradia=new Categoria("Moradia","Aluguel");Categoria catAlim=new Categoria("Alimentação","Supermercado");Categoria catLazer=new Categoria("Lazer","Streaming");
+            switch (escolha) {
+                case 1: menuLancamentos(); break;
+                case 2: menuOrcamentos(); break;
+                case 3: menuRelatorios(); break;
+                case 4: menuSimulacoes(); break;
+                case 5:
+                    gestor.salvarEstado(); // Módulo 7
+                    running = false;
+                    System.out.println("Sistema salvo. Até logo!");
+                    break;
+                default:
+                    System.out.println("Opção inválida.");
+            }
+        }
+        scanner.close();
+    }
 
-Lancamento l1=new Lancamento(3500.0,LocalDate.now(),"Salário Mensal",TipoLancamento.RECEITA,catSalario,ccAna);sistema.executarLancamento(l1);
+    private void menuLancamentos() {
+        System.out.println("\n--- Menu Lançamentos ---");
+        System.out.println("1. Nova Despesa");
+        System.out.println("2. Nova Receita");
+        // (Outras opções: Transferência, Estorno, etc.)
+        System.out.print("Escolha: ");
+        int escolha = scanner.nextInt();
+        scanner.nextLine();
 
-Lancamento l2=new Lancamento(150.0,LocalDate.now(),"Empréstimo",ccAna,ccBeto);sistema.executarLancamento(l2);
+        if (escolha == 1) {
+            try {
+                System.out.print("ID do Usuário Pagador (ex: 'ana'): ");
+                String userId = scanner.nextLine();
+                Usuario u = gestor.getUsuario(userId);
+                if (u == null) {
+                    System.out.println("Usuário não encontrado.");
+                    return;
+                }
+                // Assume a primeira conta
+                ContaCorrente c = (ContaCorrente) u.getContas().get(0); 
 
-System.out.println("\n... Testando Regra: Saldo Insuficiente ...");Lancamento l3_falha=new Lancamento(5000.0,LocalDate.now(),"Tentar comprar PC",TipoLancamento.DESPESA,catLazer,ccAna);sistema.executarLancamento(l3_falha);
+                System.out.print("Valor da Despesa: ");
+                double valor = scanner.nextDouble();
+                scanner.nextLine();
+                
+                System.out.print("Descrição: ");
+                String desc = scanner.nextLine();
+                
+                System.out.print("Categoria (ex: 'Lazer'): ");
+                String catNome = scanner.nextLine();
+                System.out.print("Subcategoria (ex: 'Streaming'): ");
+                String subCatNome = scanner.nextLine();
+                
+                Categoria cat = new Categoria(catNome, subCatNome);
 
-System.out.println("\n... Testando Regra: Polimorfismo (Cartão) e Alerta de Limite ...");Lancamento l4_cartao=new Lancamento(1750.0,LocalDate.now(),"Compra Supermercado",TipoLancamento.DESPESA,catAlim,cartaoAna);sistema.executarLancamento(l4_cartao);
+                Lancamento l = new Lancamento(valor, LocalDate.now(), desc, 
+                                              TipoLancamento.DESPESA, cat, c);
+                
+                gestor.executarLancamento(l); // Executa e verifica alertas de orçamento
+                
+            } catch (Exception e) {
+                System.err.println("Erro ao criar lançamento: " + e.getMessage());
+            }
+        }
+        // Implementar case 2 (Receita)
+    }
 
-System.out.println("\n... Testando Regra: Despesa Compartilhada (Rateio Automático) ...");Lancamento l5_aluguel=new Lancamento(2100.0,LocalDate.now(),"Aluguel República",TipoLancamento.DESPESA,catMoradia,ccCarla);
-
-Map<Usuario,Double>rateioAluguel=new HashMap<>();rateioAluguel.put(ana,700.0);rateioAluguel.put(beto,700.0);rateioAluguel.put(carla,700.0);l5_aluguel.setRateio(rateioAluguel);
-
-sistema.executarLancamento(l5_aluguel);
-
-System.out.println("\n... Testando Regra: Estorno ...");sistema.estornarLancamento(l2.getId());
-
-System.out.println("\n... Testando Regra: Parcelamento ...");sistema.criarDespesaParcelada(180.0,3,LocalDate.now(),"Assinatura Streaming",catLazer,ccAnaDigital);
-
-// --- 4. Relatórios Finais ---
-System.out.println("\n\n--- 4. GERANDO RELATÓRIOS FINAIS ---");
-
-sistema.gerarRelatorioConsolidadoUsuario(ana);sistema.gerarRelatorioConsolidadoUsuario(beto);sistema.gerarRelatorioConsolidadoUsuario(carla);sistema.gerarRelatorioConsolidadoUsuario(republica);
-
-sistema.gerarExtratoConta(ccAna);sistema.gerarExtratoConta(ccBeto);sistema.gerarExtratoConta(ccCarla);sistema.gerarExtratoConta(cartaoAna);sistema.gerarExtratoConta(ccAnaDigital);}}
+    private void menuOrcamentos() {
+        System.out.println("\n(Módulo 4) Lógica de Orçamentos implementada.");
+        System.out.println("Um orçamento de 'Lazer' (R$ 100) foi pré-cadastrado.");
+        System.out.println("Tente lançar uma despesa de R$ 110 em Lazer > Streaming para ver o alerta.");
+    }
+    
+    private void menuRelatorios() {
+        System.out.println("\n--- Menu Relatórios (Módulo 6) ---");
+        // Módulo 6 (Relatórios) e Padrão Factory
+        String relatorio = gestor.gerarRelatorio(TipoRelatorio.GASTOS_POR_CATEGORIA);
+        System.out.println(relatorio);
+    }
+    
+    private void menuSimulacoes() {
+        System.out.println("\n--- Menu Simulações (Módulo 5) ---");
+        Usuario u = gestor.getUsuario("ana");
+        Categoria cat = new Categoria("Lazer", "Streaming");
+        
+        // Módulo 5 (Algoritmos) e Padrão Strategy
+        gestor.simularCenario(u, -20.0, cat); // Simula "E se eu gastar 20% a menos..."
+    }
+}
