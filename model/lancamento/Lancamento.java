@@ -1,5 +1,6 @@
 package gestorfinanceiro.model.lancamento;
 
+import gestorfinanceiro.model.conta.ContaCorrente;
 import gestorfinanceiro.model.conta.ContaFinanceira;
 import gestorfinanceiro.model.usuario.Usuario;
 import java.time.LocalDate;
@@ -33,7 +34,8 @@ public class Lancamento implements Serializable {
 
     // Construtor para Despesa/Receita
     public Lancamento(double valor, LocalDate data, String desc, TipoLancamento tipo,
-            Categoria cat, ContaFinanceira conta, AtomicInteger idCounter) {
+            Categoria cat, ContaFinanceira conta) {
+        AtomicInteger idCounter = null;
         this.id = "L-" + idCounter.getAndIncrement();
         this.valor = valor;
         this.data = data;
@@ -57,6 +59,16 @@ public class Lancamento implements Serializable {
         this.categoria = new Categoria("Transferência", "Transferência");
         this.contaOrigem = origem;
         this.contaDestino = destino;
+    }
+
+    public Lancamento(double valor2, LocalDate now, String desc, TipoLancamento despesa, Categoria cat,
+            ContaCorrente c) {
+        //TODO Auto-generated constructor stub
+    }
+
+    public Lancamento(double valor2, LocalDate now, String descEstorno, ContaFinanceira contaDestino2,
+            ContaFinanceira contaOrigem2) {
+        //TODO Auto-generated constructor stub
     }
 
     public void setRateioPorPeso(Map<Usuario, Integer> rateio) {
@@ -130,13 +142,13 @@ public class Lancamento implements Serializable {
         switch (this.tipo) {
             case RECEITA:
                 return new Lancamento(this.valor, LocalDate.now(), descEstorno,
-                        TipoLancamento.DESPESA, this.categoria, this.conta, null);
+                        TipoLancamento.DESPESA, this.categoria, this.conta);
             case DESPESA:
                 return new Lancamento(this.valor, LocalDate.now(), descEstorno,
-                        TipoLancamento.RECEITA, this.categoria, this.conta, null);
+                        TipoLancamento.RECEITA, this.categoria, this.conta);
             case TRANSFERENCIA:
                 return new Lancamento(this.valor, LocalDate.now(), descEstorno,
-                        this.contaDestino, this.contaOrigem, null);
+                        this.contaDestino, this.contaOrigem);
             default:
                 throw new IllegalStateException("Tipo de lançamento desconhecido para estorno.");
         }

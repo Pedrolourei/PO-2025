@@ -129,7 +129,7 @@ public class GestorFinanceiroApp {
                 Categoria cat = new Categoria(catNome, subCatNome);
 
                 Lancamento l = new Lancamento(valor, LocalDate.now(), desc, 
-                                              TipoLancamento.DESPESA, cat, c, null);
+                                              TipoLancamento.DESPESA, cat, c);
                 
                 gestor.executarLancamento(l); // Executa e verifica alertas de orçamento
                 

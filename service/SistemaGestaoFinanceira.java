@@ -316,7 +316,7 @@ public class SistemaGestaoFinanceira implements Serializable {
             LocalDate dataParcela = dataInicio.plusMonths(i);
 
             Lancamento parcela = new Lancamento(valorParcela, dataParcela, descParcela,
-                    TipoLancamento.DESPESA, cat, conta, null);
+                    TipoLancamento.DESPESA, cat, null);
 
             if (i == 0 && (dataParcela.isEqual(LocalDate.now()) || dataParcela.isBefore(LocalDate.now()))) {
                 System.out.println("  > Executando 1ª parcela hoje.");
